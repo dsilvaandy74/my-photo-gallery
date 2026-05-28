@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.local
+
+# Build outputs
+dist/
+build/
+out/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+
+# Large media files (consider using Git LFS or external hosting)
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# Backup and zip files
+*.zip
+*.backup*
+index.html.backup*
+
+# Sensitive or private files
+password.txt
+secrets.txt

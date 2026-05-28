@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anand's Memories</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap');
+
+    body {
+      font-family: 'Inter', system_ui, sans-serif;
+    }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      }
+    }
+
+    .media-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      background: #f1f5f9;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      aspect-ratio: 4 / 3;
+    }
+
+    .media-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    .media-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .media-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .media-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent, rgba(15, 23, 42, 0.65));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 12px;
+    }
+
+    .media-card:hover .media-overlay {
+      opacity: 1;
+    }
+
+    .modal {
+      animation: fadeInScale 0.2s ease forwards;
+    }
+
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .password-card {
+      animation: fadeInScale 0.3s ease forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900">
+
+  <!-- Password Protection -->
+  <div id="password-screen" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[999] flex items-center justify-center p-6">
+    <div class="w-full max-w-md password-card">
+      <div class="bg-white rounded-3xl shadow-2xl p-8">
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center justify-center w-14 h-14 bg-slate-900 rounded-2xl mb-4">
+            <i class="fas fa-lock text-white text-3xl"></i>
+          </div>
+          <h1 class="text-2xl font-semibold tracking-tight">Anand's Memories</h1>
+          <p class="text-slate-500 mt-2 text-sm">This collection is private.</p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-2">Password</label>
+          <input 
+            type="password" 
+            id="password-input"
+            class="w-full px-4 py-3 text-lg border border-slate-300 rounded-2xl focus:outline-none focus:border-slate-800"
+            placeholder="Enter password"
+            onkeypress="if (event.key === 'Enter') verifyPassword()">
+          
+          <div id="password-error" class="hidden mt-3 text-red-500 text-sm">
+            Incorrect password. Please try again.
+          </div>
+
+          <button 
+            onclick="verifyPassword()"
+            class="mt-4 w-full bg-slate-900 hover:bg-black text-white font-semibold py-3.5 rounded-2xl transition-all active:scale-[0.985]">
+            Enter Gallery
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="main-content" class="hidden">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-semibold tracking-tight">Anand's Memories</h1>
+          <p class="text-slate-500 text-sm">A private collection</p>
+        </div>
+        
+        <div class="flex items-center gap-x-4 text-sm">
+          <div class="px-4 py-1.5 bg-slate-100 border border-slate-200 rounded-full">
+            <span id="photo-count">0</span> photos
+          </div>
+          <div class="px-4 py-1.5 bg-slate-100 border border-slate-200 rounded-full">
+            <span id="video-count">0</span> videos
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Photos Section -->
+    <section class="max-w-7xl mx-auto px-6 pt-10">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-semibold tracking-tight">Photos</h2>
+      </div>
+      <div id="photo-grid" class="media-grid">
+        <!-- Populated by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Videos Section -->
+    <section class="max-w-7xl mx-auto px-6 pt-12 pb-16">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-semibold tracking-tight">Videos</h2>
+      </div>
+      <div id="video-grid" class="media-grid">
+        <!-- Populated by JavaScript -->
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Photo Lightbox -->
+  <div id="photo-lightbox" onclick="closePhotoLightbox()" 
+       class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+    <div class="max-w-5xl w-full" onclick="event.stopImmediatePropagation()">
+      <div class="flex justify-end mb-3">
+        <button onclick="closePhotoLightbox()" 
+                class="text-white/80 hover:text-white p-2">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      <img id="lightbox-image" class="max-h-[80vh] w-full object-contain rounded-xl shadow-2xl" alt="">
+      <div id="lightbox-caption" class="text-white text-center mt-4 text-lg font-medium"></div>
+    </div>
+  </div>
+
+  <!-- Video Player Modal -->
+  <div id="video-modal" onclick="closeVideoModal()" 
+       class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+    <div class="max-w-5xl w-full" onclick="event.stopImmediatePropagation()">
+      <div class="flex justify-between items-center mb-3 px-1">
+        <div id="video-modal-title" class="text-white text-xl font-semibold"></div>
+        <button onclick="closeVideoModal()" 
+                class="text-white/70 hover:text-white p-2">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      <div class="bg-black rounded-2xl overflow-hidden shadow-2xl">
+        <video id="video-player" class="w-full max-h-[75vh]" controls playsinline preload="metadata">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== CONFIGURATION ====================
+    const PHOTOS = [
+      { file: "./images/file (1).jpg", caption: "Photo 1" },
+      { file: "./images/file (2).jpg", caption: "Photo 2" },
+      { file: "./images/file (3).jpg", caption: "Photo 3" },
+      { file: "./images/file (4).jpg", caption: "Photo 4" },
+      { file: "./images/file (5).jpg", caption: "Photo 5" },
+      { file: "./images/file (6).jpg", caption: "Photo 6" },
+      { file: "./images/file (7).jpg", caption: "Photo 7" },
+      { file: "./images/file (8).jpg", caption: "Photo 8" },
+      { file: "./images/file (1).png", caption: "Photo 9" },
+      { file: "./images/file (2).png", caption: "Photo 10" },
+      { file: "./images/file (3).png", caption: "Photo 11" },
+      { file: "./images/file (4).png", caption: "Photo 12" },
+      { file: "./images/file (5).png", caption: "Photo 13" },
+      { file: "./images/file (6).png", caption: "Photo 14" },
+      { file: "./images/file (7).png", caption: "Photo 15" },
+      { file: "./images/file (8).png", caption: "Photo 16" },
+      { file: "./images/file (9).png", caption: "Photo 17" },
+      { file: "./images/file (10).png", caption: "Photo 18" },
+      { file: "./images/file (11).png", caption: "Photo 19" },
+      { file: "./images/file (12).png", caption: "Photo 20" },
+      { file: "./images/file (13).png", caption: "Photo 21" },
+      { file: "./images/file (14).png", caption: "Photo 22" },
+      { file: "./images/file (15).png", caption: "Photo 23" },
+      { file: "./images/file (16).png", caption: "Photo 24" },
+      { file: "./images/file (17).png", caption: "Photo 25" },
+      { file: "./images/file (18).png", caption: "Photo 26" },
+      { file: "./images/file (19).png", caption: "Photo 27" },
+      { file: "./images/file (20).png", caption: "Photo 28" },
+      { file: "./images/file (21).png", caption: "Photo 29" }
+    ];
+
+    const VIDEOS = [
+      {
+        file: "./videos/VID_20260524_112003_00_035_20260526181157_clip1_181157.mp4",
+        title: "Video 1"
+      },
+      {
+        file: "./videos/VID_20260524_113327_00_036_20260526181125_clip1_181125.mp4",
+        title: "Video 2"
+      }
+    ];
+
+    // ==================== PASSWORD PROTECTION ====================
+    const PASSWORD = "dsilva123";
+    const AUTH_STORAGE_KEY = "anands_memories_authenticated";
+
+    function isAuthenticated() {
+      return sessionStorage.getItem(AUTH_STORAGE_KEY) === "true";
+    }
+
+    function showPasswordScreen() {
+      document.getElementById("password-screen").classList.remove("hidden");
+      document.getElementById("password-screen").classList.add("flex");
+      setTimeout(() => {
+        document.getElementById("password-input").focus();
+      }, 300);
+    }
+
+    function hidePasswordScreen() {
+      const screen = document.getElementById("password-screen");
+      screen.classList.remove("flex");
+      screen.classList.add("hidden");
+    }
+
+    function verifyPassword() {
+      const input = document.getElementById("password-input");
+      const error = document.getElementById("password-error");
+
+      if (input.value === PASSWORD) {
+        sessionStorage.setItem(AUTH_STORAGE_KEY, "true");
+        hidePasswordScreen();
+        initializeGallery();
+      } else {
+        error.classList.remove("hidden");
+        input.value = "";
+        input.focus();
+      }
+    }
+
+    // ==================== GALLERY RENDERING ====================
+    function renderPhotos() {
+      const grid = document.getElementById("photo-grid");
+      grid.innerHTML = "";
+
+      PHOTOS.forEach((photo, index) => {
+        const card = document.createElement("div");
+        card.className = "media-card cursor-pointer overflow-hidden";
+        card.innerHTML = `
+          <img src="${photo.file}" alt="${photo.caption}" loading="lazy">
+          <div class="media-overlay">
+            <div class="text-white">
+              <p class="text-sm font-medium">${photo.caption}</p>
+            </div>
+          </div>
+        `;
+        card.onclick = () => openPhotoModal(index);
+        grid.appendChild(card);
+      });
+
+      document.getElementById("photo-count").textContent = PHOTOS.length;
+    }
+
+    function renderVideos() {
+      const grid = document.getElementById("video-grid");
+      grid.innerHTML = "";
+
+      VIDEOS.forEach((video, index) => {
+        const card = document.createElement("div");
+        card.className = "media-card cursor-pointer overflow-hidden bg-slate-900 flex items-center justify-center";
+        card.innerHTML = `
+          <div class="absolute inset-0 bg-gradient-to-br from-black/70 to-black/40"></div>
+          <div class="relative z-10 text-center text-white">
+            <i class="fas fa-play text-4xl mb-2 opacity-90"></i>
+            <p class="text-sm font-medium px-3">${video.title}</p>
+          </div>
+        `;
+        card.onclick = () => openVideoModal(index);
+        grid.appendChild(card);
+      });
+
+      document.getElementById("video-count").textContent = VIDEOS.length;
+    }
+
+    function initializeGallery() {
+      document.getElementById("main-content").classList.remove("hidden");
+      renderPhotos();
+      renderVideos();
+    }
+
+    // ==================== MODALS ====================
+    let currentPhotoIndex = 0;
+
+    function openPhotoModal(index) {
+      currentPhotoIndex = index;
+      const modal = document.getElementById("photo-lightbox");
+      const img = document.getElementById("lightbox-image");
+      const caption = document.getElementById("lightbox-caption");
+
+      img.src = PHOTOS[index].file;
+      caption.textContent = PHOTOS[index].caption;
+
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closePhotoLightbox() {
+      const modal = document.getElementById("photo-lightbox");
+      modal.classList.remove("flex");
+      modal.classList.add("hidden");
+    }
+
+    function openVideoModal(index) {
+      const modal = document.getElementById("video-modal");
+      const player = document.getElementById("video-player");
+      const title = document.getElementById("video-modal-title");
+
+      const video = VIDEOS[index];
+      player.src = video.file;
+      title.textContent = video.title;
+
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+
+      // Try autoplay (may be blocked by browser)
+      player.play().catch(() => {});
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById("video-modal");
+      const player = document.getElementById("video-player");
+
+      player.pause();
+      player.src = "";
+
+      modal.classList.remove("flex");
+      modal.classList.add("hidden");
+    }
+
+    // ==================== KEYBOARD SUPPORT ====================
+    document.addEventListener("keydown", function(e) {
+      const photoModal = document.getElementById("photo-lightbox");
+      const videoModal = document.getElementById("video-modal");
+
+      if (!photoModal.classList.contains("hidden")) {
+        if (e.key === "Escape") closePhotoLightbox();
+      }
+      if (!videoModal.classList.contains("hidden")) {
+        if (e.key === "Escape") closeVideoModal();
+      }
+    });
+
+    // ==================== INITIALIZATION ====================
+    function init() {
+      if (isAuthenticated()) {
+        document.getElementById("password-screen").classList.add("hidden");
+        document.getElementById("main-content").classList.remove("hidden");
+        renderPhotos();
+        renderVideos();
+      } else {
+        document.getElementById("password-screen").classList.remove("hidden");
+        document.getElementById("password-screen").classList.add("flex");
+        
+        // Auto focus password input
+        setTimeout(() => {
+          const input = document.getElementById("password-input");
+          if (input) input.focus();
+        }, 500);
+      }
+    }
+
+    // Make password function available globally for the input
+    window.verifyPassword = function() {
+      const input = document.getElementById("password-input");
+      const error = document.getElementById("password-error");
+
+      if (input.value === "dsilva123") {
+        sessionStorage.setItem("anands_memories_authenticated", "true");
+        document.getElementById("password-screen").classList.add("hidden");
+        document.getElementById("password-screen").classList.remove("flex");
+        document.getElementById("main-content").classList.remove("hidden");
+        renderPhotos();
+        renderVideos();
+      } else {
+        error.classList.remove("hidden");
+        input.value = "";
+        input.focus();
+      }
+    };
+
+    // Start the app
+    init();
+  </script>
+</body>
+</html>
