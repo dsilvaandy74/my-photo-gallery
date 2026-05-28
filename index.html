@@ -4,128 +4,103 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Anand's Memories</title>
-  <link rel="stylesheet" href="./dist/output.css">
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
   <style>
     .tab-button {
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 10px 28px;
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
     }
     .tab-button.active {
-      background-color: white;
-      color: #0f172a;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      font-weight: 600;
+      background-color: #0f172a;
+      color: white;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
     }
     .tab-button:not(.active) {
-      color: #64748b;
+      background-color: #f1f5f9;
+      color: #475569;
     }
     .tab-button:not(.active):hover {
       background-color: #e2e8f0;
-      color: #0f172a;
+    }
+    
+    .media-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .media-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-900">
-
-  <!-- Main Content -->
-  <div id="main-content">
-
+<body class="bg-slate-50 text-slate-900">
+  <div class="max-w-6xl mx-auto px-6 py-8">
+    
     <!-- Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
-      <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-semibold tracking-tight">Anand's Memories</h1>
-          <p class="text-slate-500 text-sm">A private collection</p>
-        </div>
-        
-        <div class="flex items-center gap-x-4 text-sm">
-          <div class="px-4 py-1.5 bg-slate-100 border border-slate-200 rounded-full">
-            <span id="photo-count">0</span> photos
-          </div>
-          <div class="px-4 py-1.5 bg-slate-100 border border-slate-200 rounded-full">
-            <span id="video-count">0</span> videos
-          </div>
-        </div>
-      </div>
-    </header>
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-semibold tracking-tight">Anand's Memories</h1>
+      <p class="text-slate-500 mt-2">A collection of moments</p>
+    </div>
 
-    <!-- Section Tabs -->
-    <div class="flex justify-center my-8">
-      <div class="inline-flex items-center bg-slate-100 rounded-2xl p-1 shadow-inner border border-slate-200">
-        <button id="tab-photos"
-                onclick="showPhotos()"
-                class="tab-button active px-5 py-2 text-sm font-semibold rounded-xl transition-all">
+    <!-- Tabs -->
+    <div class="flex justify-center mb-8">
+      <div class="inline-flex bg-slate-100 rounded-full p-1">
+        <button onclick="showPhotos()" id="tab-photos"
+                class="tab-button active px-6 py-2 text-sm font-medium rounded-full">
           Photos
         </button>
-        <button id="tab-videos"
-                onclick="showVideos()"
-                class="tab-button px-5 py-2 text-sm font-semibold rounded-xl transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-200">
+        <button onclick="showVideos()" id="tab-videos"
+                class="tab-button px-6 py-2 text-sm font-medium rounded-full">
           Videos
         </button>
       </div>
     </div>
 
-    <!-- Photos Section -->
+    <!-- Photos -->
     <div id="photos-section">
-      <section class="max-w-7xl mx-auto px-6 pt-10">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-semibold tracking-tight">Photos</h2>
-        </div>
-        <div id="photo-grid" class="media-grid">
-          <!-- Populated by JavaScript -->
-        </div>
-      </section>
+      <div id="photo-grid" 
+           class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      </div>
     </div>
 
-    <!-- Videos Section -->
-    <div id="videos-section" style="display: none;">
-      <section class="max-w-7xl mx-auto px-6 pt-12 pb-16">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-semibold tracking-tight">Videos</h2>
-        </div>
-        <div id="video-grid" class="media-grid">
-          <!-- Populated by JavaScript -->
-        </div>
-      </section>
+    <!-- Videos -->
+    <div id="videos-section" class="hidden">
+      <div id="video-grid" 
+           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+      </div>
     </div>
 
   </div>
 
   <!-- Photo Lightbox -->
-  <div id="photo-lightbox" onclick="closePhotoLightbox()" 
+  <div id="photo-modal" onclick="closePhotoModal()" 
        class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-    <div class="max-w-5xl w-full" onclick="event.stopImmediatePropagation()">
-      <div class="flex justify-end mb-3">
-        <button onclick="closePhotoLightbox()" 
-                class="text-white/80 hover:text-white p-2">
-          <i class="fas fa-times text-2xl"></i>
-        </button>
+    <div onclick="event.stopImmediatePropagation()" class="max-w-4xl w-full">
+      <img id="modal-image" class="max-h-[80vh] w-full object-contain rounded-xl" alt="">
+      <div class="text-center mt-4">
+        <p id="modal-caption" class="text-white text-lg"></p>
       </div>
-      <img id="lightbox-image" class="max-h-[80vh] w-full object-contain rounded-xl shadow-2xl" alt="">
-      <div id="lightbox-caption" class="text-white text-center mt-4 text-lg font-medium"></div>
     </div>
   </div>
 
-  <!-- Video Player Modal -->
+  <!-- Video Modal -->
   <div id="video-modal" onclick="closeVideoModal()" 
        class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
-    <div class="max-w-5xl w-full" onclick="event.stopImmediatePropagation()">
-      <div class="flex justify-between items-center mb-3 px-1">
-        <div id="video-modal-title" class="text-white text-xl font-semibold"></div>
-        <button onclick="closeVideoModal()" 
-                class="text-white/70 hover:text-white p-2">
-          <i class="fas fa-times text-2xl"></i>
-        </button>
+    <div onclick="event.stopImmediatePropagation()" class="w-full max-w-3xl">
+      <div class="bg-black rounded-2xl overflow-hidden">
+        <div id="video-container" class="aspect-video bg-black"></div>
       </div>
-      <div id="video-player-container" class="bg-black rounded-2xl overflow-hidden shadow-2xl" style="aspect-ratio: 16 / 9; max-height: 75vh;">
-        <!-- Video or YouTube iframe injected here via JavaScript -->
+      <div class="text-center mt-3">
+        <p id="video-title" class="text-white text-lg font-medium"></p>
       </div>
     </div>
   </div>
 
   <script>
-    // ==================== CONFIGURATION ====================
+    // ==================== DATA ====================
     const PHOTOS = [
       { file: "./images/file (1).jpg", caption: "Photo 1" },
       { file: "./images/file (2).jpg", caption: "Photo 2" },
@@ -159,39 +134,24 @@
     ];
 
     const VIDEOS = [
-      {
-        id: "mbPIEF7kPm4",
-        title: "Video 1",
-        type: "youtube"
-      },
-      {
-        id: "c9Bx7gJf6Rg",
-        title: "Video 2",
-        type: "youtube"
-      }
+      { id: "mbPIEF7kPm4", title: "Video 1" },
+      { id: "c9Bx7gJf6Rg", title: "Video 2" }
     ];
 
-    // ==================== GALLERY RENDERING ====================
+    // ==================== RENDER FUNCTIONS ====================
     function renderPhotos() {
       const grid = document.getElementById("photo-grid");
       grid.innerHTML = "";
 
       PHOTOS.forEach((photo, index) => {
         const card = document.createElement("div");
-        card.className = "media-card cursor-pointer overflow-hidden";
+        card.className = `media-card aspect-[4/3] rounded-2xl overflow-hidden shadow-sm border border-slate-200 cursor-pointer`;
         card.innerHTML = `
-          <img src="${photo.file}" alt="${photo.caption}" loading="lazy">
-          <div class="media-overlay">
-            <div class="text-white">
-              <p class="text-sm font-medium">${photo.caption}</p>
-            </div>
-          </div>
+          <img src="${photo.file}" alt="${photo.caption}" class="w-full h-full object-cover">
         `;
         card.onclick = () => openPhotoModal(index);
         grid.appendChild(card);
       });
-
-      document.getElementById("photo-count").textContent = PHOTOS.length;
     }
 
     function renderVideos() {
@@ -200,70 +160,23 @@
 
       VIDEOS.forEach((video, index) => {
         const card = document.createElement("div");
-        card.className = "media-card cursor-pointer overflow-hidden bg-slate-900 flex items-center justify-center";
+        card.className = `media-card aspect-video bg-slate-900 rounded-2xl overflow-hidden shadow-sm cursor-pointer flex items-center justify-center`;
         card.innerHTML = `
-          <div class="absolute inset-0 bg-gradient-to-br from-black/70 to-black/40"></div>
-          <div class="relative z-10 text-center text-white">
+          <div class="text-center text-white">
             <i class="fab fa-youtube text-red-500 text-4xl mb-2"></i>
-            <p class="text-sm font-medium px-3">${video.title}</p>
+            <p class="text-sm font-medium">${video.title}</p>
           </div>
         `;
         card.onclick = () => openVideoModal(index);
         grid.appendChild(card);
       });
-
-      document.getElementById("video-count").textContent = VIDEOS.length;
-    }
-
-    function showPhotos() {
-      const photos = document.getElementById('photos-section');
-      const videos = document.getElementById('videos-section');
-      const tabPhotos = document.getElementById('tab-photos');
-      const tabVideos = document.getElementById('tab-videos');
-
-      if (photos) photos.style.display = 'block';
-      if (videos) videos.style.display = 'none';
-
-      if (tabPhotos) tabPhotos.classList.add('active');
-      if (tabVideos) tabVideos.classList.remove('active');
-    }
-
-    function showVideos() {
-      const photos = document.getElementById('photos-section');
-      const videos = document.getElementById('videos-section');
-      const tabPhotos = document.getElementById('tab-photos');
-      const tabVideos = document.getElementById('tab-videos');
-
-      if (photos) photos.style.display = 'none';
-      if (videos) videos.style.display = 'block';
-
-      if (tabPhotos) tabPhotos.classList.remove('active');
-      if (tabVideos) tabVideos.classList.add('active');
-    }
-
-    function initializeGallery() {
-      const mainContent = document.getElementById("main-content");
-      if (mainContent) mainContent.classList.remove("hidden");
-
-      try {
-        renderPhotos();
-        renderVideos();
-      } catch (e) {
-        console.error("Error rendering gallery:", e);
-      }
-
-      // Default to photos tab with active state
-      showPhotos();
     }
 
     // ==================== MODALS ====================
-    let currentPhotoIndex = 0;
-
     function openPhotoModal(index) {
-      currentPhotoIndex = index;
-      const modal = document.getElementById("photo-lightbox");
-      const img = document.getElementById("lightbox-image");
-      const caption = document.getElementById("lightbox-caption");
+      const modal = document.getElementById("photo-modal");
+      const img = document.getElementById("modal-image");
+      const caption = document.getElementById("modal-caption");
 
       img.src = PHOTOS[index].file;
       caption.textContent = PHOTOS[index].caption;
@@ -273,83 +186,83 @@
     }
 
     function closePhotoLightbox() {
-      const modal = document.getElementById("photo-lightbox");
+      const modal = document.getElementById("photo-modal");
       modal.classList.remove("flex");
       modal.classList.add("hidden");
     }
 
     function openVideoModal(index) {
       const modal = document.getElementById("video-modal");
-      const container = document.getElementById("video-player-container");
-      const title = document.getElementById("video-modal-title");
+      const container = document.getElementById("video-container");
+      const title = document.getElementById("video-title");
 
       const video = VIDEOS[index];
       title.textContent = video.title;
+      container.innerHTML = "";
+
+      const iframe = document.createElement("iframe");
+      iframe.width = "100%";
+      iframe.height = "100%";
+      iframe.src = `https://www.youtube.com/embed/${video.id}?autoplay=1`;
+      iframe.title = video.title;
+      iframe.frameBorder = "0";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      container.appendChild(iframe);
 
       modal.classList.remove("hidden");
       modal.classList.add("flex");
-
-      // Clear previous content
-      container.innerHTML = "";
-
-      if (video.type === "youtube") {
-        // Create YouTube iframe
-        const iframe = document.createElement("iframe");
-        iframe.width = "100%";
-        iframe.height = "100%";
-        iframe.src = `https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0&modestbranding=1`;
-        iframe.title = video.title;
-        iframe.frameBorder = "0";
-        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-        iframe.allowFullscreen = true;
-        iframe.style.border = "none";
-        container.appendChild(iframe);
-      } else {
-        // Fallback for local video if needed in future
-        const videoEl = document.createElement("video");
-        videoEl.src = video.file;
-        videoEl.controls = true;
-        videoEl.playsInline = true;
-        videoEl.style.width = "100%";
-        videoEl.style.maxHeight = "75vh";
-        videoEl.style.background = "#000";
-        container.appendChild(videoEl);
-        videoEl.play().catch(() => {});
-      }
     }
 
     function closeVideoModal() {
       const modal = document.getElementById("video-modal");
-      const container = document.getElementById("video-player-container");
-
-      // Clear iframe or video to stop playback
+      const container = document.getElementById("video-container");
       container.innerHTML = "";
-
       modal.classList.remove("flex");
       modal.classList.add("hidden");
     }
 
-    // ==================== KEYBOARD SUPPORT ====================
+    // ==================== TAB FUNCTIONS ====================
+    function showPhotos() {
+      document.getElementById('photos-section').style.display = 'block';
+      document.getElementById('videos-section').style.display = 'none';
+
+      document.getElementById('tab-photos').classList.add('active');
+      document.getElementById('tab-videos').classList.remove('active');
+    }
+
+    function showVideos() {
+      document.getElementById('photos-section').style.display = 'none';
+      document.getElementById('videos-section').style.display = 'block';
+
+      document.getElementById('tab-photos').classList.remove('active');
+      document.getElementById('tab-videos').classList.add('active');
+    }
+
+    // ==================== INITIALIZATION ====================
+    function initializeGallery() {
+      renderPhotos();
+      renderVideos();
+      showPhotos(); // default to photos
+    }
+
+    // Keyboard support
     document.addEventListener("keydown", function(e) {
-      const photoModal = document.getElementById("photo-lightbox");
+      const photoModal = document.getElementById("photo-modal");
       const videoModal = document.getElementById("video-modal");
 
-      if (!photoModal.classList.contains("hidden")) {
-        if (e.key === "Escape") closePhotoLightbox();
+      if (!photoModal.classList.contains("hidden") && e.key === "Escape") {
+        closePhotoLightbox();
       }
-      if (!videoModal.classList.contains("hidden")) {
-        if (e.key === "Escape") closeVideoModal();
+      if (!videoModal.classList.contains("hidden") && e.key === "Escape") {
+        closeVideoModal();
       }
     });
 
-    // ==================== INITIALIZATION ====================
-    function init() {
-      document.getElementById("main-content").classList.remove("hidden");
-      initializeGallery();
-    }
-
     // Start the app
-    init();
+    window.onload = function() {
+      initializeGallery();
+    };
   </script>
 </body>
 </html>
