@@ -187,10 +187,8 @@
           <i class="fas fa-times text-2xl"></i>
         </button>
       </div>
-      <div class="bg-black rounded-2xl overflow-hidden shadow-2xl">
-        <video id="video-player" class="w-full max-h-[75vh]" controls playsinline preload="metadata">
-          Your browser does not support the video tag.
-        </video>
+      <div id="video-player-container" class="bg-black rounded-2xl overflow-hidden shadow-2xl" style="aspect-ratio: 16 / 9; max-height: 75vh;">
+        <!-- Video or YouTube iframe injected here via JavaScript -->
       </div>
     </div>
   </div>
@@ -231,12 +229,14 @@
 
     const VIDEOS = [
       {
-        file: "./videos/VID_20260524_112003_00_035_20260526181157_clip1_181157.mp4",
-        title: "Video 1"
+        id: "mbPIEF7kPm4",
+        title: "Video 1",
+        type: "youtube"
       },
       {
-        file: "./videos/VID_20260524_113327_00_036_20260526181125_clip1_181125.mp4",
-        title: "Video 2"
+        id: "c9Bx7gJf6Rg",
+        title: "Video 2",
+        type: "youtube"
       }
     ];
 
@@ -310,7 +310,7 @@
         card.innerHTML = `
           <div class="absolute inset-0 bg-gradient-to-br from-black/70 to-black/40"></div>
           <div class="relative z-10 text-center text-white">
-            <i class="fas fa-play text-4xl mb-2 opacity-90"></i>
+            <i class="fab fa-youtube text-red-500 text-4xl mb-2"></i>
             <p class="text-sm font-medium px-3">${video.title}</p>
           </div>
         `;
@@ -351,26 +351,50 @@
 
     function openVideoModal(index) {
       const modal = document.getElementById("video-modal");
-      const player = document.getElementById("video-player");
+      const container = document.getElementById("video-player-container");
       const title = document.getElementById("video-modal-title");
 
       const video = VIDEOS[index];
-      player.src = video.file;
       title.textContent = video.title;
 
       modal.classList.remove("hidden");
       modal.classList.add("flex");
 
-      // Try autoplay (may be blocked by browser)
-      player.play().catch(() => {});
+      // Clear previous content
+      container.innerHTML = "";
+
+      if (video.type === "youtube") {
+        // Create YouTube iframe
+        const iframe = document.createElement("iframe");
+        iframe.width = "100%";
+        iframe.height = "100%";
+        iframe.src = `https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0&modestbranding=1`;
+        iframe.title = video.title;
+        iframe.frameBorder = "0";
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.allowFullscreen = true;
+        iframe.style.border = "none";
+        container.appendChild(iframe);
+      } else {
+        // Fallback for local video if needed in future
+        const videoEl = document.createElement("video");
+        videoEl.src = video.file;
+        videoEl.controls = true;
+        videoEl.playsInline = true;
+        videoEl.style.width = "100%";
+        videoEl.style.maxHeight = "75vh";
+        videoEl.style.background = "#000";
+        container.appendChild(videoEl);
+        videoEl.play().catch(() => {});
+      }
     }
 
     function closeVideoModal() {
       const modal = document.getElementById("video-modal");
-      const player = document.getElementById("video-player");
+      const container = document.getElementById("video-player-container");
 
-      player.pause();
-      player.src = "";
+      // Clear iframe or video to stop playback
+      container.innerHTML = "";
 
       modal.classList.remove("flex");
       modal.classList.add("hidden");
