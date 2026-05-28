@@ -38,6 +38,54 @@ A personal, password-protected photo and video gallery.
 
 This is a **client-side** password protection only. The password is stored in the JavaScript. It is suitable for casual privacy but not for high-security use cases.
 
+## Development & Build
+
+### Prerequisites
+- Node.js 18+ (https://nodejs.org)
+
+### Install dependencies
+```bash
+npm install
+```
+
+### Development (with hot reload)
+```bash
+npm run dev
+```
+
+### Production Build
+```bash
+npm run build
+```
+This generates an optimized `dist/output.css` file.
+
+## Deployment
+
+### Quick Deploy (Recommended for beginners)
+
+1. Go to [Netlify Drop](https://app.netlify.com/drop)
+2. Drag and drop the entire `photo-gallery` folder (or zip it first).
+3. Your site will be live in seconds with a random URL.
+4. You can later connect a custom domain.
+
+### Deploy with Git (Recommended long-term)
+
+1. Push this folder to a GitHub repository.
+2. On Netlify:
+   - Click "Add new site" → "Import an existing project"
+   - Connect your GitHub repo
+   - Deploy settings:
+     - Build command: (leave empty)
+     - Publish directory: `.` (or leave as default)
+3. Your site will auto-deploy on every push.
+
+### GitHub Pages (Free alternative)
+
+1. Push to GitHub.
+2. Go to repo Settings → Pages.
+3. Source: Deploy from a branch → Branch: `main` / Root.
+4. Your site will be available at `https://<username>.github.io/<repo-name>`
+
 ## License
 
 Private project for personal use.
