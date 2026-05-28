@@ -37,66 +37,109 @@
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
-  <div class="max-w-6xl mx-auto px-6 py-8">
-    
-    <!-- Header -->
-    <div class="text-center mb-8">
-      <h1 class="text-4xl font-semibold tracking-tight">Anand's Memories</h1>
-      <p class="text-slate-500 mt-2">A collection of moments</p>
-    </div>
 
-    <!-- Tabs -->
-    <div class="flex justify-center mb-8">
-      <div class="inline-flex bg-slate-100 rounded-full p-1">
-        <button onclick="showPhotos()" id="tab-photos"
-                class="tab-button active px-6 py-2 text-sm font-medium rounded-full">
-          Photos
-        </button>
-        <button onclick="showVideos()" id="tab-videos"
-                class="tab-button px-6 py-2 text-sm font-medium rounded-full">
-          Videos
-        </button>
-      </div>
-    </div>
+  <!-- Password Protection Overlay -->
+  <div id="password-screen" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[999] flex items-center justify-center p-6">
+    <div class="w-full max-w-md">
+      <div class="bg-white rounded-3xl shadow-2xl p-8">
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center justify-center w-14 h-14 bg-slate-900 rounded-2xl mb-4">
+            <i class="fas fa-lock text-white text-3xl"></i>
+          </div>
+          <h1 class="text-2xl font-semibold tracking-tight">Anand's Memories</h1>
+          <p class="text-slate-500 mt-2 text-sm">This collection is private.</p>
+        </div>
 
-    <!-- Photos -->
-    <div id="photos-section">
-      <div id="photo-grid" 
-           class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-      </div>
-    </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-2">Password</label>
+            <input 
+              type="password" 
+              id="password-input"
+              class="w-full px-4 py-3 text-lg border border-slate-300 rounded-2xl focus:outline-none focus:border-slate-800"
+              placeholder="Enter password"
+              onkeypress="if (event.key === 'Enter') checkPassword()">
+          </div>
 
-    <!-- Videos -->
-    <div id="videos-section" class="hidden">
-      <div id="video-grid" 
-           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-      </div>
-    </div>
+          <button 
+            onclick="checkPassword()"
+            class="w-full bg-slate-900 hover:bg-black text-white font-semibold py-3.5 rounded-2xl transition-all active:scale-[0.985]">
+            Enter Gallery
+          </button>
 
-  </div>
-
-  <!-- Photo Lightbox -->
-  <div id="photo-modal" onclick="closePhotoModal()" 
-       class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-    <div onclick="event.stopImmediatePropagation()" class="max-w-4xl w-full">
-      <img id="modal-image" class="max-h-[80vh] w-full object-contain rounded-xl" alt="">
-      <div class="text-center mt-4">
-        <p id="modal-caption" class="text-white text-lg"></p>
+          <div id="password-error" class="hidden text-red-500 text-sm text-center">
+            Incorrect password. Please try again.
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Video Modal -->
-  <div id="video-modal" onclick="closeVideoModal()" 
-       class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
-    <div onclick="event.stopImmediatePropagation()" class="w-full max-w-3xl">
-      <div class="bg-black rounded-2xl overflow-hidden">
-        <div id="video-container" class="aspect-video bg-black"></div>
+  <!-- Main Content -->
+  <div id="main-content" class="hidden">
+
+    <div class="max-w-6xl mx-auto px-6 py-8">
+      
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-semibold tracking-tight">Anand's Memories</h1>
+        <p class="text-slate-500 mt-2">A collection of moments</p>
       </div>
-      <div class="text-center mt-3">
-        <p id="video-title" class="text-white text-lg font-medium"></p>
+
+      <!-- Tabs -->
+      <div class="flex justify-center mb-8">
+        <div class="inline-flex bg-slate-100 rounded-full p-1">
+          <button onclick="showPhotos()" id="tab-photos"
+                  class="tab-button active px-6 py-2 text-sm font-medium rounded-full">
+            Photos
+          </button>
+          <button onclick="showVideos()" id="tab-videos"
+                  class="tab-button px-6 py-2 text-sm font-medium rounded-full">
+            Videos
+          </button>
+        </div>
+      </div>
+
+      <!-- Photos -->
+      <div id="photos-section">
+        <div id="photo-grid" 
+             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        </div>
+      </div>
+
+      <!-- Videos -->
+      <div id="videos-section" class="hidden">
+        <div id="video-grid" 
+             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Photo Lightbox -->
+    <div id="photo-modal" onclick="closePhotoModal()" 
+         class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+      <div onclick="event.stopImmediatePropagation()" class="max-w-4xl w-full">
+        <img id="modal-image" class="max-h-[80vh] w-full object-contain rounded-xl" alt="">
+        <div class="text-center mt-4">
+          <p id="modal-caption" class="text-white text-lg"></p>
+        </div>
       </div>
     </div>
+
+    <!-- Video Modal -->
+    <div id="video-modal" onclick="closeVideoModal()" 
+         class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+      <div onclick="event.stopImmediatePropagation()" class="w-full max-w-3xl">
+        <div class="bg-black rounded-2xl overflow-hidden">
+          <div id="video-container" class="aspect-video bg-black"></div>
+        </div>
+        <div class="text-center mt-3">
+          <p id="video-title" class="text-white text-lg font-medium"></p>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -137,6 +180,31 @@
       { id: "mbPIEF7kPm4", title: "Video 1" },
       { id: "c9Bx7gJf6Rg", title: "Video 2" }
     ];
+
+    // ==================== PASSWORD PROTECTION ====================
+    const PASSWORD = "dsilva123";
+    const AUTH_KEY = "anands_memories_auth";
+
+    function isAuthenticated() {
+      return sessionStorage.getItem(AUTH_KEY) === "true";
+    }
+
+    function checkPassword() {
+      const input = document.getElementById("password-input");
+      const error = document.getElementById("password-error");
+      const screen = document.getElementById("password-screen");
+
+      if (input.value === PASSWORD) {
+        sessionStorage.setItem(AUTH_KEY, "true");
+        screen.classList.add("hidden");
+        document.getElementById("main-content").classList.remove("hidden");
+        initializeGallery();
+      } else {
+        error.classList.remove("hidden");
+        input.value = "";
+        input.focus();
+      }
+    }
 
     // ==================== RENDER FUNCTIONS ====================
     function renderPhotos() {
@@ -259,10 +327,24 @@
       }
     });
 
-    // Start the app
-    window.onload = function() {
-      initializeGallery();
-    };
+    // ==================== APP START ====================
+    function init() {
+      if (sessionStorage.getItem("anands_memories_authenticated") === "true") {
+        document.getElementById("password-screen").classList.add("hidden");
+        document.getElementById("main-content").classList.remove("hidden");
+        initializeGallery();
+      } else {
+        document.getElementById("password-screen").classList.remove("hidden");
+        document.getElementById("password-screen").classList.add("flex");
+        
+        setTimeout(() => {
+          const input = document.getElementById("password-input");
+          if (input) input.focus();
+        }, 400);
+      }
+    }
+
+    window.onload = init;
   </script>
 </body>
 </html>
