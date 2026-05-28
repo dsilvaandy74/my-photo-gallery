@@ -9,12 +9,16 @@
 
   <style>
     .tab-button {
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .tab-button.active {
       background-color: white;
       color: #0f172a;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      font-weight: 600;
+    }
+    .tab-button:not(.active) {
+      color: #64748b;
     }
     .tab-button:not(.active):hover {
       background-color: #e2e8f0;
@@ -47,16 +51,16 @@
     </header>
 
     <!-- Section Tabs -->
-    <div class="flex justify-center my-6">
-      <div class="inline-flex bg-slate-200 rounded-xl p-1 shadow-sm">
+    <div class="flex justify-center my-8">
+      <div class="inline-flex items-center bg-slate-100 rounded-2xl p-1 shadow-inner border border-slate-200">
         <button id="tab-photos"
                 onclick="showPhotos()"
-                class="tab-button active px-6 py-2.5 text-base font-semibold rounded-lg transition-all bg-white text-slate-900 shadow">
+                class="tab-button active px-5 py-2 text-sm font-semibold rounded-xl transition-all">
           Photos
         </button>
         <button id="tab-videos"
                 onclick="showVideos()"
-                class="tab-button px-6 py-2.5 text-base font-semibold rounded-lg transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-300/50">
+                class="tab-button px-5 py-2 text-sm font-semibold rounded-xl transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-200">
           Videos
         </button>
       </div>
